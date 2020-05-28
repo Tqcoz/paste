@@ -1,0 +1,25 @@
+if {LocIs::%player's uuid%::3} is set:
+						send "&6&lPROFILE - &eSwitching to Profile &9Sapphire!"
+						loop 36 times:
+							set {slotData::%player's uuid%::%{LocIs::%player's uuid%::3}%::%{_slot}%} to slot {_slot} of player
+							add 1 to {_slot}
+							set {slotData::%player's uuid%::%{LocIs::%player's uuid%::3}%::0} to slot 0 of player
+						set {armorData::%player's uuid%::%{LocIs::%player's uuid%::3}%::helmet} to helmet of player
+						set {armorData::%player's uuid%::%{LocIs::%player's uuid%::3}%::chestplate} to chestplate of player
+						set {armorData::%player's uuid%::%{LocIs::%player's uuid%::3}%::leggings} to leggings of player
+						set {armorData::%player's uuid%::%{LocIs::%player's uuid%::3}%::boots} to boots of player
+						clear the player's inventory
+						set {pIs::%player's uuid%} to 1
+						teleport the player to {LocIs::%player's uuid%::%{pIs::%player's uuid%}%}
+						loop 36 times:
+							set slot {_slot} of player to {slotData::%player's uuid%::%{LocIs::%player's uuid%::1}%::%{_slot}%}
+							add 1 to {_slot}
+							set slot 0 of player to {slotData::%player's uuid%::%{LocIs::%player's uuid%::1}%::0}
+						set helmet of player to {armorData::%player's uuid%::%{LocIs::%player's uuid%::1}%::helmet}
+						set chestplate of player to {armorData::%player's uuid%::%{LocIs::%player's uuid%::1}%::chestplate}
+						set leggings of player to {armorData::%player's uuid%::%{LocIs::%player's uuid%::1}%::leggings}
+						set boots of player to {armorData::%player's uuid%::%{LocIs::%player's uuid%::1}%::boots}
+						set {_cooldown} to difference between {PsCooldown::%player's uuid%} and now
+						if {_cooldown} is less than 90 seconds:
+							send "&6&lCOOLDOWN - &eYou're currently in a cooldown of switching Profiles"
+		
