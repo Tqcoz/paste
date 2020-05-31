@@ -1,0 +1,122 @@
+command /rr [<text>] [<text>]:
+	trigger:
+		if arg-1 is "join":
+			if event is not running:
+				send "There are currently no events for you to join"
+			if event is running:
+				if {joinedEvent::%player's uuid%} is not set:
+					set {joinedEvent::%player's uuid%} to false
+				if {joinedEvent::%player's uuid%} is false:
+					if event did not start:
+						set {locBeforeEvent::%player's uuid%} to player's location
+						broadcast "&6%player% &lhas joined the event!"
+						add player to {event::players::*}
+						send "&3Teleporting to Event Lobby"
+						teleport the player to {eventLobbySpawn}
+						set {eventInventoryHelmet::%player's uuid%} to helmet of player
+						set {eventInventoryChest::%player's uuid%} to chestplate of player
+						set {eventInventorylegs::%player's uuid%} to leggings of player
+						set {eventInventoryboots::%player's uuid%} to boots of player
+						loop 36 times:
+							set {eventInventory::%player's uuid%::%{_slot}%} to slot {_slot} of player
+							add 1 to {_slot}
+						clear the player's inventory
+						send "&6Saved Inventory Layout"
+						set {joinedEvent::%player's uuid%} to true
+		if arg-1 is "seteventspawn":
+			if player has permission "luckyprison.events.redrover":
+				set {eventEventSpawn} to player's location
+				send "&cEvent Spawn Set!"
+		if arg-1 is "seteventlobby":
+			if player has permission "luckyprison.events.redrover":
+				set {eventLobbySpawn} to player's location
+				send "&cEvent Lobby Set!"
+		if arg-1 is "start":
+			if player has permission "luckyprison.events.redrover":
+				start event "redrover"
+				broadcast "&l&7[&r&3Event&l&7] &cRed Rover&e is starting in 2 minutes &6(/event join to join the Event)"
+				wait 1 minute
+				broadcast "&l&7[&r&3Event&l&7] &cRed Rover&e is starting in 1 minute &6(/event join to join the Event)"
+				wait 10 seconds
+				broadcast "&l&7[&r&3Event&l&7] &cRed Rover&e is starting in 50 seconds &6(/event join to join the Event)"
+				broadcast ""
+				wait 1 second
+				loop {event::players::*}:
+					send "&l&7[&r&3Event&l&7] &eFor player who do not know how to play &cRed Rover:" to loop-value
+					send "&l&7[&r&3Event&l&7] &eYour mission is to go to either the &cRed Side &eor &9Blue Side" to loop-value
+					send "&l&7[&r&3Event&l&7] &edepending on what is instructed to do" to loop-value
+					wait 1 second
+					send "&l&7[&r&3Event&l&7] &e" to loop-value
+					send "&l&7[&r&3Event&l&7] &6Now for the obstacle: there will be a killer in the middle of the sides" to loop-value
+					send "&l&7[&r&3Event&l&7] &6trying to eliminate you, after eliminated you will be turned into a spectator" to loop-value
+					wait 3 seconds
+					send ""
+					send "&l&7[&r&3Event&l&7] &dYou may hit each other!" to loop-value
+					wait 15 seconds
+					send "&l&7[&r&3Event&l&7] &e&lRed Rover Event starts in 30 seconds!" to loop-value
+					send "&l&7[&r&3Event&l&7] &d&l/event join &d to join the Event" to loop-value
+					wait 20 seconds
+					send "&l&7[&r&3Event&l&7] &6Prepare to be teleported to the Game" to loop-value
+					wait 10 seconds
+					teleport loop-value to {eventEventSpawn}
+					send "&l&7[&r&3Event&l&7] &6Teleported to Red Rover" to loop-value
+					send "&l&7[&r&3Event&l&7] &eGame starts in 10 seconds" to loop-value
+					wait 10 seconds
+					send "&cEvent &3> &9GO TO &lBLUE! (5 SECONDS)" to loop-value
+					wait 3 seconds
+					send "&cEvent &3> &9GO TO &lBLUE! (2 SECONDS)" to loop-value
+					wait 1 second
+					send "&cEvent &3> &9GO TO &lBLUE! (1 SECONDS)" to loop-value
+					if region of loop-value is "redside":
+						teleport loop-value to   
+					send ""
+
+
+		if arg-1 is "leave":
+			if event did not start:
+				if {joinedEvent::%player's uuid%} is true:
+					remove player from {event::players::*}
+					teleport the player to {locBeforeEvent::%player's uuid%}
+					set {joinedEvent::%player's uuid%} to false
+					set helmet of player to {eventInventoryHelmet::%player's uuid%}
+					set chestplate of player to {eventInventoryChest::%player's uuid%}
+					set leggings of player to {eventInventorylegs::%player's uuid%}
+					set boots of player to {eventInventoryboots::%player's uuid%}
+					set {joinedEvent::%player's uuid%} to false
+					remove player from {event::players::*}
+					send "&cYou have left the event and been given all of your items!"
+					loop 36 times:
+						if {_slot} is not set:
+							set {_slot} to 0
+						set slot {_slot} of player to {eventInventory::%player's uuid%::%{_slot}%}
+						add 1 to {_slot}
+		if arg-1 is "end":
+			if player has permission "luckyprison.events.redrover":
+				end the current event
+				broadcast "&cRed Rover&e has ended"
+on join:
+	if {joinedEvent::%player's uuid%} is true:
+		set helmet of player to {eventInventoryHelmet::%player's uuid%}
+		set chestplate of player to {eventInventoryChest::%player's uuid%}
+		set leggings of player to {eventInventorylegs::%player's uuid%}
+		set boots of player to {eventInventoryboots::%player's uuid%}
+		set {joinedEvent::%player's uuid%} to false
+		remove player from {event::players::*}
+		send "&cYou have been removed from the event for disconnecting!"
+		loop 36 times:
+			if {_slot} is not set:
+				set {_slot} to 0
+				set slot {_slot} of player to {eventInventory::%player's uuid%::%{_slot}%}
+				add 1 to {_slot}
+command /testinventory [<text>]:
+	trigger:
+		if arg-1 is "set":
+			set {eventInventoryHelmet::%player's uuid%} to helmet of player
+			set {eventInventoryChest::%player's uuid%} to chestplate of player
+			set {eventInventorylegs::%player's uuid%} to leggings of player
+			set {eventInventoryboots::%player's uuid%} to boots of player
+			loop 36 times:
+				set {eventInventory::%player's uuid%::%{_slot}%} to slot {_slot} of player
+				add 1 to {_slot}
+			clear the player's inventory
+		if arg-1 is "give":
